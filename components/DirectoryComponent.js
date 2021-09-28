@@ -1,34 +1,47 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { FlatList } from 'react-native';
 import { ListItem } from 'react-native-elements';
+import { CAMPSITES } from '../shared/campsites';
 
-function Directory(props) {
+class Directory extends Component {
 
-    const renderDirectoryItem = ({item}) => {
+    constructor(props){
+        super(props);
+        this.state={
+            campsites: CAMPSITES,
+        };
+    }
 
-        //ListItem onPress -> when item is pressed, function will automatically fire //
-
-        //This ListItem onPress triggers the onCampsiteSelect event handler from MainComponent that was passed via props.//
-
-        //The id of the pressed campsite will update item.id and give that value to the onCampsiteSelect event handler. That will then update the selectedCampsite property in the MainComponent with this id.//
-
-        return (
-            <ListItem
-                title={item.name}
-                subtitle={item.description}
-                onPress = {() => props.onPress(item.id)}
-                leftAvatar={{ source: require('./images/react-lake.jpg')}}
-            />
-        );
+    //Title of Header 
+    static navigationOptions = {
+        title: 'Directory'
     };
 
-    return (
-        <FlatList
-            data={props.campsites}
-            renderItem={renderDirectoryItem}
-            keyExtractor={item => item.id.toString()}
-        />
-    );
+    render(){
+        const { navigate } = this.props.navigation;
+
+        const renderDirectoryItem = ({item}) => {
+
+            //onPress will update campsiteId and navigate to the pressed campsite 
+
+            return (
+                <ListItem
+                    title={item.name}
+                    subtitle={item.description}
+                    onPress = {() => navigate('CampsiteInfo', {campsiteId: item.id})}
+                    leftAvatar={{ source: require('./images/react-lake.jpg')}}
+                />
+            );
+        };
+
+        return (
+            <FlatList
+                data={this.state.campsites}
+                renderItem={renderDirectoryItem}
+                keyExtractor={item => item.id.toString()}
+            />
+        );
+    }
 }
 
 export default Directory;
