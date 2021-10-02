@@ -22,8 +22,10 @@ class Directory extends Component {
 
         const renderDirectoryItem = ({item}) => {
 
-            //onPress will update campsiteId and navigate to the pressed campsite 
+            //onPress will update campsiteId and navigate to the pressed campsite. 
+            //the campsiteId will be passed to the campsiteinfo component in the campsiteId param
 
+            //Creates listitem for each campground 
             return (
                 <ListItem
                     title={item.name}
@@ -34,6 +36,7 @@ class Directory extends Component {
             );
         };
 
+        //Formats webpage
         return (
             <FlatList
                 data={this.state.campsites}

@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import Home from './HomeComponent';
 import Directory from './DirectoryComponent';
 import CampsiteInfo from './CampsiteInfoComponent';
+import Contact from './ContactComponent';
+import About from './AboutComponent';
 import Constants from 'expo-constants';
 import { View, Platform } from 'react-native';
 import { createStackNavigator } from 'react-navigation-stack';
@@ -55,11 +57,59 @@ const HomeNavigator = createStackNavigator(
     }
 );
 
+//Stack Navigator for About Component//
+const AboutNavigator = createStackNavigator(
+    //Screens//
+    {
+        About: { screen: About },
+        
+    },
+
+    {
+        //Style of Navigation Header//
+        defaultNavigationOptions: {
+            headerStyle: {
+                backgroundColor: '#5637DD'
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                color: '#fff'
+            }
+        }
+    }
+);
+
+
+//Stack Navigator for Contact Component//
+const ContactNavigator = createStackNavigator(
+    //Screens//
+    {
+        Contact: { screen: Contact },
+        
+    },
+
+    {
+        //Style of Navigation Header//
+        defaultNavigationOptions: {
+            headerStyle: {
+                backgroundColor: '#5637DD'
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                color: '#fff'
+            }
+        }
+    }
+);
+
+
 //Drawer Navigator, opens at Home by default bc it's 1st Screen//
 const MainNavigator = createDrawerNavigator(
     {
         Home: { screen: HomeNavigator},
-        Directory: {screen: DirectoryNavigator}
+        Directory: {screen: DirectoryNavigator},
+        About: {screen: AboutNavigator},
+        Contact: {screen: ContactNavigator},
     },
     {
         drawerBackgroundColor: '#CEC8FF'
