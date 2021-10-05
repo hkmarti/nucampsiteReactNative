@@ -1,8 +1,16 @@
 import React, { Component } from 'react';
 import { Text, View, ScrollView, FlatList } from 'react-native';
 import { Card, Icon } from 'react-native-elements';
-import { CAMPSITES } from '../shared/campsites';
-import { COMMENTS } from '../shared/comments';
+import { connect } from 'react-redux';
+import { baseUrl } from '../shared/baseUrl';
+
+//Receives state as a prop and returns campsites & comments as a state// 
+const mapStateToProps = state => {
+    return{
+        campsites: state.campsites,
+        comments: state.comments
+    };
+};
 
 function RenderCampsite(props) {
 
@@ -12,7 +20,7 @@ function RenderCampsite(props) {
         return (
             <Card 
                 featuredTitle={campsite.name}
-                image={require('./images/react-lake.jpg')}
+                image={{uri: baseUrl + campsite.image}}
             >
                 <Text style={{margin: 10}}>
                     {campsite.description}
@@ -72,17 +80,14 @@ class CampsiteInfo extends Component {
     constructor(props){
         super(props);
         this.state = {
-            campsites: CAMPSITES,
-            comments: COMMENTS,
-            favorite: false,
-        }
+            favorite: false
+        };
     }
 
     //Event handler that toggles favorite to true//
     markFavorite() {
         this.setState({favorite: true});
     }
-
 
     //Title of Header
     static navigationOptions = {
@@ -94,9 +99,9 @@ class CampsiteInfo extends Component {
         //Holds id of selected campsite //
         const campsiteId = this.props.navigation.getParam('campsiteId');
         //Pulls out campsite object from campsite array using filter, has it so selected campsite (campsiteId) === campsite.id//
-        const campsite = this.state.campsites.filter (campsite => campsite.id === campsiteId)[0];
+        const campsite = this.props.campsites.campsites.filter (campsite => campsite.id === campsiteId)[0];
         //Filter comments for the selected campsite we want to render by using comments.campsiteId, renders into new array called comments//
-        const comments = this.state.comments.filter (comment => comment.campsiteId === campsiteId);
+        const comments = this.props.comments.comments.filter (comment => comment.campsiteId === campsiteId);
 
 
         //Passes selected campsite to RenderCampsite//
@@ -113,4 +118,5 @@ class CampsiteInfo extends Component {
     }
 }
 
-export default CampsiteInfo;
+//Connects CampsiteInfo component to Redux store, so that CampsiteInfo component receives the campsites,comments prop from Redux store //
+export default connect(mapStateToProps)(CampsiteInfo);

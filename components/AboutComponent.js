@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
 import { ScrollView, FlatList, Text } from 'react-native';
-import { PARTNERS } from '../shared/partners';
 import { Card, ListItem } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { baseUrl } from '../shared/baseUrl';
 
+//Receives state as a prop and returns partner as a state// 
+const mapStateToProps = state => {
+    return{
+        partners: state.partners
+    };
+};
 
 class About extends Component {
-
-    constructor(props){
-        super(props);
-        this.state={
-            partners: PARTNERS
-        };
-    }
 
     //Title of Header
     static navigationOptions = {
@@ -27,7 +27,7 @@ class About extends Component {
                 <ListItem
                     title={item.name}
                     subtitle={item.description}
-                    leftAvatar={{ source: require('./images/bootstrap-logo.png')}}
+                    leftAvatar={{ source: {uri: baseUrl + item.image}}}
                 />
             );
         };
@@ -49,7 +49,7 @@ class About extends Component {
                 <Mission/>
                 <Card title="Community Partners">
                     <FlatList
-                    data={this.state.partners}
+                    data={this.props.partners.partners}
                     renderItem={renderPartner}
                     keyExtractor={item => item.id.toString()}
                     />
@@ -59,4 +59,5 @@ class About extends Component {
     }
 }
 
-export default About;
+//Connects About component to Redux store, so that About component receives the partners prop from Redux store //
+export default connect(mapStateToProps)(About);

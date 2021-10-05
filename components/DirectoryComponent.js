@@ -1,16 +1,17 @@
 import React, { Component } from 'react';
 import { FlatList } from 'react-native';
-import { ListItem } from 'react-native-elements';
-import { CAMPSITES } from '../shared/campsites';
+import { Tile } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { baseUrl } from '../shared/baseUrl';
+
+//Receives state as a prop and returns campsites as a state// 
+const mapStateToProps = state => {
+    return{
+        campsites: state.campsites,
+    };
+};
 
 class Directory extends Component {
-
-    constructor(props){
-        super(props);
-        this.state={
-            campsites: CAMPSITES,
-        };
-    }
 
     //Title of Header 
     static navigationOptions = {
@@ -25,13 +26,14 @@ class Directory extends Component {
             //onPress will update campsiteId and navigate to the pressed campsite. 
             //the campsiteId will be passed to the campsiteinfo component in the campsiteId param
 
-            //Creates listitem for each campground 
+            //Creates tile for each campground 
             return (
-                <ListItem
+                <Tile
                     title={item.name}
-                    subtitle={item.description}
+                    caption={item.description}
+                    featured
                     onPress = {() => navigate('CampsiteInfo', {campsiteId: item.id})}
-                    leftAvatar={{ source: require('./images/react-lake.jpg')}}
+                    imageSrc={{uri: baseUrl + item.image}}
                 />
             );
         };
@@ -39,7 +41,7 @@ class Directory extends Component {
         //Formats webpage
         return (
             <FlatList
-                data={this.state.campsites}
+                data={this.props.campsites.campsites}
                 renderItem={renderDirectoryItem}
                 keyExtractor={item => item.id.toString()}
             />
@@ -47,4 +49,5 @@ class Directory extends Component {
     }
 }
 
-export default Directory;
+//Connects Directory component to Redux store, so that Directory component receives the campsites prop from Redux store //
+export default connect(mapStateToProps)(Directory);
