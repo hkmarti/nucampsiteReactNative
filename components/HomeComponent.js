@@ -3,6 +3,7 @@ import { View, Text, ScrollView } from 'react-native';
 import { Card } from "react-native-elements";
 import { connect } from 'react-redux';
 import { baseUrl } from '../shared/baseUrl';
+import Loading from "./LoadingComponent";
 
 //Receives state as a prop and returns campsites, promotions, partners as a state// 
 const mapStateToProps = state => {
@@ -14,7 +15,21 @@ const mapStateToProps = state => {
 };
 
 
-function RenderItem({item}) {
+function RenderItem(props) {
+
+    const {item} = props;
+
+    if (props.isLoading) {
+        return <Loading />;
+    }
+    if (props.errMess) {
+        return (
+            <View>
+                <Text>{props.errMess}</Text>
+            </View>
+        );
+    }
+
     if (item){
         return (
             //Styles the Card//
@@ -44,12 +59,21 @@ class Home extends Component {
         return (
             //Renders Cards for Campsites, Promotions and Partners//
             <ScrollView>
+               <RenderItem
+                    item={this.props.campsites.campsites.filter(campsite => campsite.featured)[0]}
+                    isLoading={this.props.campsites.isLoading}
+                    errMess={this.props.campsites.errMess}
+                />
                 <RenderItem
-                    item={this.props.campsites.campsites.filter(campsite => campsite.featured)[0]} />
+                    item={this.props.promotions.promotions.filter(promotion => promotion.featured)[0]}
+                    isLoading={this.props.promotions.isLoading}
+                    errMess={this.props.promotions.errMess}
+                />
                 <RenderItem
-                    item={this.props.promotions.promotions.filter(promotion => promotion.featured)[0]} />
-                <RenderItem
-                    item={this.props.partners.partners.filter(partner => partner.featured)[0]} />    
+                    item={this.props.partners.partners.filter(partner => partner.featured)[0]}
+                    isLoading={this.props.partners.isLoading}
+                    errMess={this.props.partners.errMess}
+                />
             </ScrollView>
         );
     }

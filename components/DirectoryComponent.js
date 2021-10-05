@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import { FlatList } from 'react-native';
+import { FlatList, View, Text } from 'react-native';
 import { Tile } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { baseUrl } from '../shared/baseUrl';
+import Loading from './LoadingComponent';
 
 //Receives state as a prop and returns campsites as a state// 
 const mapStateToProps = state => {
@@ -37,6 +38,22 @@ class Directory extends Component {
                 />
             );
         };
+
+        //if campsites prop is loading....return Loading component//
+        if (this.props.campsites.isLoading) {
+            return(
+                <Loading />
+            );
+        }
+
+        //if campsites prop has an error....return errMess as text.
+        if (this.props.campsites.errMess) {
+            return(
+                <View>
+                    <Text>{this.props.campsites.errMess}</Text>
+                </View>
+            );
+        }
 
         //Formats webpage
         return (
