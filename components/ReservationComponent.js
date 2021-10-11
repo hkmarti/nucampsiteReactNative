@@ -134,6 +134,13 @@ class Reservation extends Component {
     }
 }
 
+// const style2 = {
+//     modal: {
+//     justifyContent: 'center',
+//     margin: 20
+//     }
+// }
+
 const styles = StyleSheet.create({
     formRow: {
         alignItems: 'center',

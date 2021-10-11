@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { Text, View, ScrollView, FlatList } from 'react-native';
-import { Card, Icon } from 'react-native-elements';
+import { Text, View, ScrollView, FlatList, Modal, Button, StyleSheet } from 'react-native';
+import { Card, Icon, Input } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { baseUrl } from '../shared/baseUrl';
 import { postFavorite } from '../redux/ActionCreators';
+import { postComment } from '../redux/ActionCreators';
+import { Rating } from 'react-native-ratings';
 
 //Receives state as a prop and returns campsites, comments & favorites as a state// 
 const mapStateToProps = state => {
@@ -16,7 +18,9 @@ const mapStateToProps = state => {
 
 //Pass in postFavorite action creator with campsiteId as a paramaeter//
 const mapDispatchToProps = {
-    postFavorite: campsiteId => (postFavorite(campsiteId))
+    postFavorite: campsiteId => (postFavorite(campsiteId)),
+    postComment: (campsiteId, rating, author, text) => 
+        (postComment(campsiteId, rating, author, text))
 };
 
 function RenderCampsite(props) {
@@ -32,19 +36,28 @@ function RenderCampsite(props) {
                 <Text style={{margin: 10}}>
                     {campsite.description}
                 </Text>
-
-                <Icon
-                    //If favorite=true then solid heart(heart), if not then empty heart(heart-o)//
-                    name={props.favorite? 'heart' : 'heart-o'}
-                    type='font-awesome' //Name of iconset//
-                    color='#f50'
-                    raised ///Shadow effect//
-                    reverse //Reverse color scheme//
-                    //If heart icon is already pressed, console.log. If not, set favorite to true with markFavorite//
-                    onPress={() => props.favorite? 
-                        console.log('Already set as favorite') : props.markFavorite()}
-                />
-
+                <View style={styles.cardRow}>
+                    <Icon
+                        //If favorite=true then solid heart(heart), if not then empty heart(heart-o)//
+                        name={props.favorite? 'heart' : 'heart-o'}
+                        type='font-awesome' //Name of iconset//
+                        color='#f50'
+                        raised ///Shadow effect//
+                        reverse //Reverse color scheme//
+                        //If heart icon is already pressed, console.log. If not, set favorite to true with markFavorite//
+                        onPress={() => props.favorite? 
+                            console.log('Already set as favorite') : props.markFavorite()}
+                    />
+                    <Icon 
+                        //Pencil icon for writing comments//
+                        name="pencil"
+                        type="font-awesome"
+                        color='#5637DD'
+                        raised
+                        reverse
+                        onPress={() => props.onShowModal()}
+                    />
+                </View>
             </Card>
         );
     }
@@ -60,9 +73,15 @@ function RenderComments({comments}) {
                 <Text style={{fontSize: 14}}> 
                     {item.text} 
                 </Text>
-                <Text style={{fontSize: 12}}> 
-                    {item.rating} Stars
-                </Text>
+                <Rating 
+                    readonly
+                    startingValue={item.rating}
+                    imageSize={10}
+                    style={{
+                        alignItems:'flex-start',
+                        paddingVertical: '5%'
+                    }}
+                />
                 <Text style={{fontSize: 12}}>
                     {`-- ${item.author} , ${item.date}`}
                 </Text>
@@ -84,7 +103,38 @@ function RenderComments({comments}) {
 
 class CampsiteInfo extends Component {
 
+    constructor(props){
+        super(props);
+        this.state={
+            showModal: false,
+            rating: 5, 
+            author: "",
+            text: "",
+        };
+    }
+
+    //Toggles Modal off and on
+    toggleModal() {
+        this.setState({showModal: !this.state.showModal});
+    }
+
+    handleComment(campsiteId){
+        //Since you're taking postComment from mapDispatchToProps (aka props), you have to use this.props.postComment()//
+        this.props.postComment(campsiteId, this.state.rating, this.state.author, this.state.text)
+        this.toggleModal();
+    }
+
+    resetForm() {
+        this.setState({
+            showModal: false,
+            rating: 5, 
+            author: "",
+            text: "",
+        });
+    }
+
     //Event handler that toggles favorite to true//
+    //Since you're taking postFavorites from mapDispatchToProps (aka props), you have to use this.props.postFavorite()//
     markFavorite(campsiteId) {
         this.props.postFavorite(campsiteId);
     }
@@ -111,12 +161,83 @@ class CampsiteInfo extends Component {
                <RenderCampsite campsite={campsite}
                     favorite={this.props.favorites.includes(campsiteId)}
                     markFavorite={() => this.markFavorite(campsiteId)}
+                    onShowModal={() => this.toggleModal()}
                 />
                 <RenderComments comments={comments} />
+
+                <Modal
+                    animationType={'slide'}
+                    transparent={false}
+                    visible={this.state.showModal}
+                    onRequestClose={() => this.toggleModal()}
+
+                >
+                    <View style={styles.modal}>
+                        <Rating 
+                            showRating
+                            startingValue={this.state.rating}
+                            imageSize={40}
+                            onFinishRating={rating => this.setState({rating: rating})} 
+                            style={{paddingVertical: 10}}
+                        />
+                        <Input 
+                            placeholder="Author"
+                            leftIcon={{type:'font-awesome', name:"user-o"}}
+                            leftIconContainerStyle={{paddingRight:10}}
+                            onChangeText={author => this.setState({author: author})}
+                            value={this.state.author}
+                        />
+                        <Input 
+                             placeholder="Comment"
+                             leftIcon={{type:'font-awesome', name:"comment-o"}}
+                             leftIconContainerStyle={{paddingRight:10}}
+                             onChangeText={text => this.setState({text: text})}
+                             value={this.state.text}
+                        />
+                        <View style={{margin:10}}>
+                            <Button 
+                                title="Submit"
+                                color="#5637DD"
+                                onPress={() => {
+                                    this.handleComment(campsiteId);
+                                    this.resetForm();
+                                }}
+                            />
+
+                        </View>
+
+                        <View style={{margin:10}}>
+                        <Button
+                            onPress={() => {
+                                this.toggleModal();
+                            }}
+                            color='#808080'
+                            title="Cancel"
+                        />
+                        </View>
+                    </View>
+                </Modal>
+
             </ScrollView>
+         
+
         );
     }
 }
+
+const styles = StyleSheet.create({
+    cardRow: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
+        flexDirection: 'row',
+        margin: 20
+    },
+    modal: {
+        justifyContent: 'center',
+        margin: 20
+    }
+})
 
 //Connects CampsiteInfo component to Redux store, so that CampsiteInfo component receives the campsites,comments prop from Redux store //
 export default connect(mapStateToProps, mapDispatchToProps)(CampsiteInfo);
