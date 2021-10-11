@@ -6,6 +6,7 @@ import { baseUrl } from '../shared/baseUrl';
 import { postFavorite } from '../redux/ActionCreators';
 import { postComment } from '../redux/ActionCreators';
 import { Rating } from 'react-native-ratings';
+import * as Animatable from 'react-native-animatable';
 
 //Receives state as a prop and returns campsites, comments & favorites as a state// 
 const mapStateToProps = state => {
@@ -29,36 +30,38 @@ function RenderCampsite(props) {
 
     if (campsite) {
         return (
-            <Card 
-                featuredTitle={campsite.name}
-                image={{uri: baseUrl + campsite.image}}
-            >
-                <Text style={{margin: 10}}>
-                    {campsite.description}
-                </Text>
-                <View style={styles.cardRow}>
-                    <Icon
-                        //If favorite=true then solid heart(heart), if not then empty heart(heart-o)//
-                        name={props.favorite? 'heart' : 'heart-o'}
-                        type='font-awesome' //Name of iconset//
-                        color='#f50'
-                        raised ///Shadow effect//
-                        reverse //Reverse color scheme//
-                        //If heart icon is already pressed, console.log. If not, set favorite to true with markFavorite//
-                        onPress={() => props.favorite? 
-                            console.log('Already set as favorite') : props.markFavorite()}
-                    />
-                    <Icon 
-                        //Pencil icon for writing comments//
-                        name="pencil"
-                        type="font-awesome"
-                        color='#5637DD'
-                        raised
-                        reverse
-                        onPress={() => props.onShowModal()}
-                    />
-                </View>
-            </Card>
+            <Animatable.View animation="fadeInDown" duration={2000} delay={1000}>
+                <Card 
+                    featuredTitle={campsite.name}
+                    image={{uri: baseUrl + campsite.image}}
+                >
+                    <Text style={{margin: 10}}>
+                        {campsite.description}
+                    </Text>
+                    <View style={styles.cardRow}>
+                        <Icon
+                            //If favorite=true then solid heart(heart), if not then empty heart(heart-o)//
+                            name={props.favorite? 'heart' : 'heart-o'}
+                            type='font-awesome' //Name of iconset//
+                            color='#f50'
+                            raised ///Shadow effect//
+                            reverse //Reverse color scheme//
+                            //If heart icon is already pressed, console.log. If not, set favorite to true with markFavorite//
+                            onPress={() => props.favorite? 
+                                console.log('Already set as favorite') : props.markFavorite()}
+                        />
+                        <Icon 
+                            //Pencil icon for writing comments//
+                            name="pencil"
+                            type="font-awesome"
+                            color='#5637DD'
+                            raised
+                            reverse
+                            onPress={() => props.onShowModal()}
+                        />
+                    </View>
+                </Card>
+            </Animatable.View>
         );
     }
     return <View />;
@@ -91,13 +94,15 @@ function RenderComments({comments}) {
 
     return(
         //Format Comments section in CampsiteInfo//
-        <Card title="Comments">
-            <FlatList
-                data={comments}
-                renderItem={renderCommentItem}
-                keyExtractor={item => item.id.toString()}
-            />
-        </Card>
+        <Animatable.View animation="fadeInUp" duration={2000} delay={1000}>
+            <Card title="Comments">
+                <FlatList
+                    data={comments}
+                    renderItem={renderCommentItem}
+                    keyExtractor={item => item.id.toString()}
+                />
+            </Card>
+        </Animatable.View>
     );
 }
 
