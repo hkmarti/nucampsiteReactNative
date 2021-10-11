@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FlatList, View, Text, StyleSheet } from 'react-native';
+import { FlatList, View, Text, StyleSheet, Alert } from 'react-native';
 import { ListItem } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { Loading } from './LoadingComponent';
@@ -41,10 +41,31 @@ class Favorites extends Component {
                         First view = hidden view when you swipe. 
                         Second view = default view before you swipe.*/}
                     <View style={styles.deleteView}>
-                        {/*When pressed, deletes the favorite through campsite.id */}
+                        {/*When pressed, pops up alert and asks whether it's ok to delete.
+                        If it's ok, deletes the favorite through campsite.id 
+                        cancelable:false -> makes it so that the user is forced to answer cancel or ok */}
                         <TouchableOpacity
                             style={styles.deleteTouchable}
-                            onPress={() => this.props.deleteFavorite(item.id)}
+                            onPress={() =>
+                                Alert.alert(
+                                    'Delete Favorite?',
+                                    'Are you sure you wish to delete the favorite campsite, ' +
+                                        item.name +
+                                        '?',
+                                    [
+                                        {
+                                            text: 'Cancel',
+                                            onPress: () => console.log(item.name + 'Not Deleted'),
+                                            style: 'cancel'
+                                        },
+                                        {
+                                            text: 'OK',
+                                            onPress: () => this.props.deleteFavorite(item.id)
+                                        },
+                                    ],
+                                    { cancelable: false }
+                                )
+                            }
                         >
                             <Text style={styles.deleteText}>Delete</Text>
                         </TouchableOpacity>
