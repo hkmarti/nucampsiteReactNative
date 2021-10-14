@@ -29,6 +29,9 @@ function RenderCampsite(props) {
 
     const {campsite} = props;
 
+    //Creates a reference point//
+    const view = React.createRef();
+
     //Function that determines whether there was a horizontal drag (dx) of -200 pixels. If yes, then value is set to true, otherwise set to false. *Note: -200 pixels = 200px to left//
     const recognizeDrag = ({dx}) => (dx < -200)? true: false;
 
@@ -36,7 +39,10 @@ function RenderCampsite(props) {
     const panResponder = PanResponder.create({
         //Activate panResponder to respond to gestures on the component it is used on//
         onStartShouldSetPanResponder: () => true,
-
+        onPanResponderGrant: () => {
+            view.current.rubberBand(1000)
+            .then(endState => console.log(endState.finished ? 'finished' : 'canceled'));
+        },
         onPanResponderEnd: (e, gestureState) => {
             console.log('pan responder end', gestureState);
             //If the gesture was more than 200 pixels to left, then return true and 'Add Favorite' alert//
@@ -73,6 +79,7 @@ function RenderCampsite(props) {
                 animation="fadeInDown" 
                 duration={2000} 
                 delay={1000}
+                ref={view}
                 {...panResponder.panHandlers}>
                 <Card 
                     featuredTitle={campsite.name}
