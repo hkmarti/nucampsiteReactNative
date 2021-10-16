@@ -35,6 +35,9 @@ function RenderCampsite(props) {
     //Function that determines whether there was a horizontal drag (dx) of -200 pixels. If yes, then value is set to true, otherwise set to false. *Note: -200 pixels = 200px to left//
     const recognizeDrag = ({dx}) => (dx < -200)? true: false;
 
+    //Functino that determines if there was a swipe from left to right of 200 pixels for comments//
+    const recognizeComment = ({dx}) => (dx > 200)? true: false;
+
 
     const panResponder = PanResponder.create({
         //Activate panResponder to respond to gestures on the component it is used on//
@@ -67,8 +70,12 @@ function RenderCampsite(props) {
                     ],
                     { cancelable: false}
                 );
+            } else if (recognizeComment(gestureState)) {
+                //onShowModal opens up the toggleModal function (see RenderCampsite below), therefore using props.onShowModal() will open up the modal.//
+                props.onShowModal();
+            } else {
+                return true;
             }
-            return true;
         } 
     });   
     
