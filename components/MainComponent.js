@@ -6,6 +6,7 @@ import Contact from './ContactComponent';
 import About from './AboutComponent';
 import Reservation from './ReservationComponent';
 import Favorites from './FavoritesComponent';
+import Login from './LoginComponent';
 import Constants from 'expo-constants';
 import { View, Platform, StyleSheet, Text, ScrollView, Image } from 'react-native';
 import { createStackNavigator } from 'react-navigation-stack';
@@ -199,6 +200,34 @@ const FavoritesNavigator = createStackNavigator(
     }
 );
 
+//Stack Navigator for Login Component//
+const LoginNavigator = createStackNavigator(
+    //Screens//
+    {
+        Login: { screen: Login },
+        
+    },
+
+    {
+        //Style of Navigation Header//
+        defaultNavigationOptions: ({navigation}) => ({
+            headerStyle: {
+                backgroundColor: '#5637DD'
+            },
+            headerTintColor: '#fff',
+            headerTitleStyle: {
+                color: '#fff'
+            },
+            headerLeft: <Icon
+                    name='sign-in'
+                    type='font-awesome'
+                    iconStyle={styles.stackIcon}
+                    onPress={() => navigation.toggleDrawer()}
+            /> 
+        })
+    }
+);
+
 const CustomDrawerContentComponent = props => (
     <ScrollView>
         <SafeAreaView
@@ -222,9 +251,24 @@ const CustomDrawerContentComponent = props => (
 );
 
 
-//Drawer Navigator, opens at Home by default bc it's 1st Screen//
+//Drawer Navigator, the first navigatior by default is the first screen to load.//
+//However because we put initialRouteName: 'Home', Home screen is the default screen instead.//
 const MainNavigator = createDrawerNavigator(
     {
+        Login: { 
+            screen: LoginNavigator,
+            navigationOptions: {
+                drawerIcon: ({tintColor}) => (
+                    <Icon 
+                        name='sign-in'
+                        type='font-awesome'
+                        size={24}
+                        color={tintColor}
+                    />
+                )
+            }
+        },
+
         Home: { 
             screen: HomeNavigator,
             navigationOptions: {
@@ -314,6 +358,7 @@ const MainNavigator = createDrawerNavigator(
         },
     },
     {
+        initialRouteName: 'Home',
         drawerBackgroundColor: '#CEC8FF',
         contentComponent: CustomDrawerContentComponent
     }
