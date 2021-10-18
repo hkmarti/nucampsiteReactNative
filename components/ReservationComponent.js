@@ -4,6 +4,7 @@ import { Text, View, ScrollView, StyleSheet,
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Animatable from 'react-native-animatable';
 import { createAnimatableComponent } from 'react-native-animatable';
+import * as Notifications from 'expo-notifications';
 
 class Reservation extends Component {
 
@@ -24,15 +25,6 @@ class Reservation extends Component {
         title: 'Reserve Campsite'
     }
 
-    // toggleModal() {
-    //     this.setState({showModal: !this.state.showModal});
-    // }
-
-    // handleReservation() {
-    //     console.log(JSON.stringify(this.state));
-        
-    // }
-
     resetForm() {
         this.setState({
             campers: 1,
@@ -42,6 +34,40 @@ class Reservation extends Component {
             showModal: false
         });
     }
+
+    //Async function is a function that always return a promise//
+    async presentLocalNotification(date) {
+        function sendNotification() {
+        //Overides the default setting of 'dont show notifs' to 'show notifs'//
+            Notifications.setNotificationHandler({
+                handleNotification: async () => ({
+                    shouldShowAlert: true
+                })
+            });
+
+            Notifications.scheduleNotificationAsync({
+                content: {
+                    title: 'Your Campsite Reservation Search',
+                    body:`Search for ${date} requested`, 
+                },
+                //Fires notif immediately//
+                trigger: null
+            });
+        }
+        //Check if we have permission to send notifs//
+        //await keyword is similar in concept to a .then method, use it followed by a promise. NOTE!! Can only use the await keyword inside an async function.//
+        let permissions = await Notifications.getPermissionsAsync();
+        
+        //If no permission yet, request permission.//
+        if(!permissions.granted){
+            permissions = await Notifications.requestPermissionsAsync();
+        }
+        //If permission is granted...//
+        if (permissions.granted) {
+            sendNotification();
+        }
+    }
+
 
     render() {
         return(
@@ -111,7 +137,10 @@ class Reservation extends Component {
                                         },
                                         {
                                             text: 'OK',
-
+                                            onPress: () => {
+                                                this.presentLocalNotification(this.state.date.toLocaleDateString('en-US'));
+                                                this.resetForm();
+                                            }
                                         },
                                     ],
                                     { cancelable: false }
